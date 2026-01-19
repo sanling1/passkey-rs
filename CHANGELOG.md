@@ -2,6 +2,20 @@
 
 ## Unreleased
 
+### passkey-crypto v0.1.0
+
+A new crate! This crate houses the swappable cryptographic backends for different libraries should you
+wish/need to use a different set of libraries than the default RustCrypto libraries. As always PRs are
+accepted to add new backends should you wish to not use plenty of newtypes to get around the orphan
+rules.
+
+- New `RngBackend` trait which replaces the pre-existing `passkey-types::rand::random_vec` function.
+  Use this new method as `passkey-crypto::rng::Rng::random_vec`.
+
+### passkey-types
+
+- ⚠ BREAKING: The `passkey-types::rand` module no longer exists and is instead replaced by `passkey-crypto::rng`.
+
 ## Passkey v0.5.0
 
 - Migrate project to Rust 2024 edition
