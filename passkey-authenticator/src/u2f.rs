@@ -7,7 +7,10 @@ use p256::{
     SecretKey,
     ecdsa::{SigningKey, signature::Signer},
 };
-use passkey_crypto::rng::{Rng, RngBackend};
+use passkey_crypto::{
+    CryptoBackend,
+    rng::{Rng, RngBackend},
+};
 use passkey_types::{
     Bytes, Passkey,
     ctap2::{Flags, U2FError},
@@ -15,11 +18,18 @@ use passkey_types::{
         AuthenticationRequest, AuthenticationResponse, PublicKey, RegisterRequest, RegisterResponse,
     },
 };
+
 mod sealed {
-    use crate::{Authenticator, CredentialStore, UserValidationMethod};
+    use super::{Authenticator, CredentialStore, CryptoBackend, UserValidationMethod};
 
     pub trait Sealed {}
-    impl<S: CredentialStore, U: UserValidationMethod> Sealed for Authenticator<S, U> {}
+    impl<S, U, C> Sealed for Authenticator<S, U, C>
+    where
+        S: CredentialStore,
+        U: UserValidationMethod,
+        C: CryptoBackend,
+    {
+    }
 }
 
 /// Provides the U2F Authenticator API
@@ -42,8 +52,11 @@ pub trait U2fApi: sealed::Sealed {
 }
 
 #[async_trait::async_trait]
-impl<S: CredentialStore + Sync + Send, U: UserValidationMethod + Sync + Send> U2fApi
-    for Authenticator<S, U>
+impl<S, U, C> U2fApi for Authenticator<S, U, C>
+where
+    S: CredentialStore + Sync + Send,
+    U: UserValidationMethod + Sync + Send,
+    C: CryptoBackend + Sync + Send,
 {
     /// Apply a register request and create a credential and respond with the public key of said credential.
     async fn register(

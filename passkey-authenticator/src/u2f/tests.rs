@@ -5,7 +5,10 @@ use p256::{
     EncodedPoint,
     ecdsa::{Signature, VerifyingKey, signature::Verifier},
 };
-use passkey_crypto::rng::{Rng, RngBackend};
+use passkey_crypto::{
+    rng::{Rng, RngBackend},
+    rust_crypto::RustCryptoBackend,
+};
 use passkey_types::{ctap2::Aaguid, *};
 
 #[tokio::test]
@@ -15,6 +18,7 @@ async fn test_save_u2f_passkey() {
         Aaguid::new_empty(),
         credstore,
         MockUserValidationMethod::verified_user(0),
+        RustCryptoBackend,
     );
 
     let challenge: [u8; 32] = Rng::random_array();
