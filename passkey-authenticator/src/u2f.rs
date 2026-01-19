@@ -3,7 +3,6 @@
 use crate::{
     Authenticator, CoseKeyPair, CredentialStore, UserValidationMethod, passkey::PasskeyAccessor,
 };
-use coset::iana;
 use p256::{
     SecretKey,
     ecdsa::{SigningKey, signature::Signer},
@@ -59,8 +58,7 @@ impl<S: CredentialStore + Sync + Send, U: UserValidationMethod + Sync + Send> U2
         };
 
         // SAFETY: Can only fail if key is malformed
-        let CoseKeyPair { public: _, private } =
-            CoseKeyPair::from_secret_key(&private_key, iana::Algorithm::ES256);
+        let CoseKeyPair { public: _, private } = CoseKeyPair::from_secret_key(&private_key);
         let signing_key = SigningKey::from(private_key);
         let public_key = signing_key.verifying_key();
         let pub_key_encoded = public_key.to_encoded_point(false);
