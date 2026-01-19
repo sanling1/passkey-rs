@@ -42,7 +42,7 @@ pub use self::{
     passkey::{CredentialExtensions, Passkey, StoredHmacSecret},
     utils::{
         bytes::{Bytes, NotBase64Encoded},
-        crypto, encoding, rand,
+        crypto, encoding,
     },
 };
 

@@ -8,6 +8,7 @@ use p256::{
     SecretKey,
     ecdsa::{SigningKey, signature::Signer},
 };
+use passkey_crypto::rng::{Rng, RngBackend};
 use passkey_types::{
     Bytes, Passkey,
     ctap2::{Flags, U2FError},
@@ -53,7 +54,7 @@ impl<S: CredentialStore + Sync + Send, U: UserValidationMethod + Sync + Send> U2
     ) -> Result<RegisterResponse, U2FError> {
         // Create Keypair on P256 curve
         let private_key = {
-            let mut rng = rand::thread_rng();
+            let mut rng = Rng::new();
             SecretKey::random(&mut rng)
         };
 

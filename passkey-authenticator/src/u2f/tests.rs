@@ -5,6 +5,7 @@ use p256::{
     EncodedPoint,
     ecdsa::{Signature, VerifyingKey, signature::Verifier},
 };
+use passkey_crypto::rng::{Rng, RngBackend};
 use passkey_types::{ctap2::Aaguid, *};
 
 #[tokio::test]
@@ -16,8 +17,8 @@ async fn test_save_u2f_passkey() {
         MockUserValidationMethod::verified_user(0),
     );
 
-    let challenge: [u8; 32] = ::rand::random();
-    let application: [u8; 32] = ::rand::random();
+    let challenge: [u8; 32] = Rng::random_array();
+    let application: [u8; 32] = Rng::random_array();
 
     // Create a U2F request
     let reg_request = RegisterRequest {
@@ -25,7 +26,7 @@ async fn test_save_u2f_passkey() {
         application,
     };
 
-    let handle: [u8; 16] = ::rand::random();
+    let handle: [u8; 16] = Rng::random_array();
 
     // Register the request and assert that it worked.
     let store_result = authenticator.register(reg_request, &handle[..]).await;
@@ -34,7 +35,7 @@ async fn test_save_u2f_passkey() {
     let public_key = response.public_key;
 
     // Now generate an authentication challenge using the original application
-    let challenge: [u8; 32] = ::rand::random();
+    let challenge: [u8; 32] = Rng::random_array();
     let auth_req = AuthenticationRequest {
         parameter: u2f::AuthenticationParameter::CheckOnly,
         application,
